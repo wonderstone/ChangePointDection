@@ -20,6 +20,8 @@ func OnlineChangepointDetection(
     //     R  -- is the probability at time step t that the last sequence is already s time steps long
     //     maxes -- the argmax on column axis of matrix R (growth probability value) for each time step
 
+	// lam - inital prob for hazard function
+	lam := 250.0
 	
 	// maxes = np.zeros(len(data) + 1)
 	maxes := make([]float64, len(data)+1)
@@ -33,7 +35,7 @@ func OnlineChangepointDetection(
 
 
 		mt := mat.NewDense(t+1, 1, nil)
-		H := hazardFunction(250,mt)
+		H := hazardFunction(lam,mt)
 		HVec := ChangeDenseToVecDense(H)
 		
 		predprobsvec := GetVectorFrom2dInnerSlice(predprobs,0)
@@ -42,6 +44,41 @@ func OnlineChangepointDetection(
 		rsm := mat.NewVecDense(t+1, nil)
 		rsm.MulElemVec(Rsub,predprobsvec)
 		rsm.MulElemVec(rsm,AddConstant(MulConstant(HVec,-1),1))
+		
+		
+		// 1.
+		ReplaceSubMatrix(R,TransformVecDenseToMatDense(rsm,false),1,t+1)
+		// 2.
+		tmpres:= mat.NewVecDense(t+1, nil)
+		tmpres.MulElemVec(Rsub,predprobsvec)
+		tmpres.MulElemVec(tmpres,HVec)
+		
+		
+		tmpVal := mat.Sum(tmpres)
+		R.Set(0,t+1,tmpVal)
+
+
+
+		// 3. get the R matrix t+1 column as a vecDense
+
+		
+		// get the instance where the pointer R is pointing to
+
+		tmpVec := GetColVector(R,t+1,0,len(data)+1)
+		
+
+
+		tmpsum := mat.Sum(tmpVec)
+
+		tmpColVectDense := mat.NewVecDense(tmpVec.Len(), tmpVec.RawVector().Data)
+
+		// Scale the tmpVec by 1/tmpsum
+		tmpColVectDense.ScaleVec(1/tmpsum, tmpColVectDense)
+
+
+		// 4.
+		ReplaceSubMatrix(R,TransformVecDenseToMatDense(tmpVec,false),0,t+1)
+
 
 		// tmpVec := GetColVector(R,t,0,t+1)
 		// tmpVec.MulElemVec(tmpVec,predprobsmat)
@@ -49,6 +86,7 @@ func OnlineChangepointDetection(
 
 
 		logLikelihoodClass.UpdateTheta([]float64{x})
+		maxes[t] = float64(ArgmaxVecDense(GetColVector(R,t,0,t+1)))
 
 	}
 
@@ -75,4 +113,18 @@ func ChangeDenseToVecDense(dense *mat.Dense) *mat.VecDense {
 		data[i] = dense.At(i, 0)
 	}
 	return mat.NewVecDense(rows, data)
+}
+
+// func to get argmax of a vector
+// ArgmaxVecDense returns the index of the maximum value in a vector
+func ArgmaxVecDense(vec *mat.VecDense) int {
+	maxVal := vec.AtVec(0)
+	maxIdx := 0
+	for i := 1; i < vec.Len(); i++ {
+		if val := vec.AtVec(i); val > maxVal {
+			maxVal = val
+			maxIdx = i
+		}
+	}
+	return maxIdx
 }

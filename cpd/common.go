@@ -223,6 +223,29 @@ func TransformVecDenseToSlice(vec *mat.VecDense) []float64 {
 }
 
 
+// func to transform a  vecDense to mat.Dense
+// TransformVecDenseToMatDense converts a *mat.VecDense to a mat.Dense with the vector as a single row.
+func TransformVecDenseToMatDense(vec *mat.VecDense, RowTag bool) *mat.Dense {
+	// if RowTag is true, then the vector is transformed to 1*n matrix
+	
+	if RowTag {
+		n := vec.Len()
+		result := mat.NewDense(1, n, nil)
+		for i := 0; i < n; i++ {
+			result.Set(0, i, vec.AtVec(i))
+		}
+		return result
+	} else {
+		// if RowTag is false, then the vector is transformed to n*1 matrix
+		n := vec.Len()
+		result := mat.NewDense(n, 1, nil)
+		for i := 0; i < n; i++ {
+			result.Set(i, 0, vec.AtVec(i))
+		}
+		return result
+	}
+}
+
 
 
 // SubDense returns a submatrix from a mat.Dense based on the specified row and column indices.
