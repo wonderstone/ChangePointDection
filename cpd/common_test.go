@@ -40,7 +40,7 @@ func TestPDF(t *testing.T) {
 	t_kappa := []float64{1}
 	t_mu := []float64{0}
 
-	st := NewStudentT(
+	st := NewStudentT_BU(
 		t_alpha,
 		t_beta,
 		t_kappa,
@@ -68,34 +68,5 @@ func TestPDF(t *testing.T) {
 	fmt.Println(c)
 
 
-
-
-	st.UpdateTheta([]float64{0.2})
-	st.UpdateTheta([]float64{0.3})
-	fmt.Println(st.mu)
-
 }
 
-// func TestUpdateTheta(t *testing.T){
-// 	data:= []float64{0.2, 0.1, 0.4}
-// 	st := NewStudentT(0.1, 0.1, 1, 0)
-
-// 	st.UpdateTheta(data)
-
-// 	if st.mu != 0.5333333333333333 {
-// 		t.Errorf("Expected 0.5333333333333333, but got %f", st.mu)
-// 	}
-
-// 	if st.kappa != 4 {
-// 		t.Errorf("Expected 4, but got %f", st.kappa)
-// 	}
-
-// 	if st.alpha != 2.5 {
-// 		t.Errorf("Expected 2.5, but got %f", st.alpha)
-// 	}
-
-// 	if st.beta != 0.013333333333333334 {
-// 		t.Errorf("Expected 0.013333333333333334, but got %f", st.beta)
-// 	}
-
-// }

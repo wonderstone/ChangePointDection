@@ -1,10 +1,6 @@
 package cpd
 
 import (
-	"encoding/csv"
-	"log"
-	"os"
-	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -13,7 +9,10 @@ import (
 // test the OnlineChangepointDetection
 func TestOnlineChangepointDetection(t *testing.T) {
 	// read the data from the ./data_output.csv
-	data := readData("./data_output.csv")
+	// the data is generated from partition 
+	// [58, 74, 117, 153, 137, 129, 188]
+	// so, the change point is 59, 75, 118, 154, 138, 130, 189
+	data := ReadData("../data/data_output.csv")
 
 	// initialize the parameters part
 	t_alpha := []float64{0.1}
@@ -21,15 +20,17 @@ func TestOnlineChangepointDetection(t *testing.T) {
 	t_kappa := []float64{1}
 	t_mu := []float64{0}
 
-	st := NewStudentT(
+	st := NewStudentT_BU(
 		t_alpha,
 		t_beta,
 		t_kappa,
 		t_mu,
 	)
-	R, maxes := OnlineChangepointDetection(data, ConstantHazard, st)
-	assert.Equal(t, 0, R.At(0, 0))
-	assert.Equal(t, 1, len(maxes))
+	R, maxes := OnlineChangepointDetection(data,250, ConstantHazard, st)
+	tmp := R.At(5, 600)
+	assert.InDelta(t,3.253488142937348e-08,tmp, 0.0001)
+	assert.Equal(t, 1.0, maxes[59])
+	
 }
 
 
@@ -47,26 +48,3 @@ func TestGetVectorFrom2dInnerSlice(t *testing.T) {
 
 }
 
-
-// func to readData from the file
-func readData(filename string) []float64 {
-	file, err := os.Open(filename)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer file.Close()
-	reader := csv.NewReader(file)
-	lines, err := reader.ReadAll()
-	if err != nil {
-		log.Fatal(err)
-	}
-	var data []float64
-	for _, line := range lines {
-		val, err := strconv.ParseFloat(line[0], 64)
-		if err != nil {
-			log.Fatal(err)
-		}
-		data = append(data, val)
-	}
-	return data
-}
