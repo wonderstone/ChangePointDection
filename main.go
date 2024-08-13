@@ -18,6 +18,7 @@ func main() {
 	seed := 100
 
 	partition, data := cpd.GenerateNormalTimeSeries(num, minl, maxl, int64(seed))
+	// WriteData(data, "data_input.csv")
 	fmt.Println(partition)
 	fmt.Println(data)
 
