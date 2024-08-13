@@ -5,8 +5,8 @@ import (
 	"math/rand"
 )
 
-// generateNormalTimeSeries generates a time series of normally distributed data.
-func generateNormalTimeSeries(num, minl, maxl int, seed int64) ([]int, []float64) {
+// GenerateNormalTimeSeries generates a time series of normally distributed data.
+func GenerateNormalTimeSeries(num, minl, maxl int, seed int64) ([]int, []float64) {
 	source := rand.NewSource(seed)
 	rng := rand.New(source)
 

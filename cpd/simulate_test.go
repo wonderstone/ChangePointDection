@@ -12,7 +12,7 @@ func TestGenerateNormalTimeSeries(t *testing.T) {
 	maxl := 1000
 	seed := 100
 
-	partition, data := generateNormalTimeSeries(num, minl, maxl, int64(seed))
+	partition, data := GenerateNormalTimeSeries(num, minl, maxl, int64(seed))
 	assert.Equal(t, 5, len(partition))
 	tmpsum := 0
 	for _, v := range partition {

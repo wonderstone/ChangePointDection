@@ -1,6 +1,7 @@
 package cpd
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -32,6 +33,43 @@ func TestOnlineChangepointDetection(t *testing.T) {
 	assert.Equal(t, 1.0, maxes[59])
 	
 }
+
+
+// test the OCPD
+func TestOCPD(t *testing.T) {
+	// read the data from the ./data_output.csv
+	// the data is generated from partition 
+	// [58, 74, 117, 153, 137, 129, 188]
+	// so, the change point is 59, 75, 118, 154, 138, 130, 189
+	data := ReadData("../data/data_output.csv")
+	// initialize the parameters part
+	t_alpha := []float64{0.1}
+	t_beta := []float64{0.01}
+	t_kappa := []float64{1}
+	t_mu := []float64{0}
+
+	st := NewStudentT_BU(
+		t_alpha,
+		t_beta,
+		t_kappa,
+		t_mu,
+	)
+	cpd := NewOCPD(250, ConstantHazardSlice, st)
+	for t, x := range data {
+		fmt.Println(t,x)
+		cpd.OCPD_Update(x)
+		fmt.Println(cpd.Res)
+		fmt.Println(cpd.Maxes)
+		fmt.Println("XXXXXXXXXXXXX")
+	}
+	fmt.Println(cpd)
+	
+
+
+}
+
+
+
 
 
 

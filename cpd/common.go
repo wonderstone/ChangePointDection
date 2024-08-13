@@ -27,6 +27,23 @@ func ConstantHazard(lam float64, r *mat.Dense) *mat.Dense {
 	return result
 }
 
+func ConstantHazardVec(lam float64, r *mat.VecDense) *mat.VecDense {
+	rRows := r.Len()
+	result := mat.NewVecDense(rRows, nil)
+	for i := 0; i < rRows; i++ {
+		result.SetVec(i, 1/lam)
+	}
+	return result
+}
+
+func ConstantHazardSlice(lam float64, r []float64) []float64 {
+	result := make([]float64, len(r))
+	for i := 0; i < len(r); i++ {
+		result[i] = 1 / lam
+	}
+	return result
+}
+
 // * Define the StudentT_Bayesian_Update struct
 type StudentT_Bayesian_Update struct {
 	alpha, beta, kappa, mu     []float64
