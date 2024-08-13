@@ -18,7 +18,14 @@ func main() {
 	seed := 100
 
 	partition, data := cpd.GenerateNormalTimeSeries(num, minl, maxl, int64(seed))
-	// WriteData(data, "data_input.csv")
+	// check if the data_input.csv file is there, if yes then delete it
+	if _, err := os.Stat("data_input.csv"); err == nil {
+		os.Remove("data_input.csv")
+	}
+
+	WriteData(data, "data_input.csv")
+
+
 	fmt.Println(partition)
 	fmt.Println(data)
 
@@ -46,6 +53,10 @@ func main() {
 	fmt.Println("Done")
 
 	// Step 4 output the c.Maxes to the csv file use csv writer
+	// check if the data_output.csv file is there, if yes then delete it
+	if _, err := os.Stat("data_output.csv"); err == nil {
+		os.Remove("data_output.csv")
+	}
 	WriteData(c.Maxes, "data_output.csv")
 }
 
