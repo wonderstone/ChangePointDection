@@ -17,4 +17,5 @@ well, try [really hard] to earn trust
 Go Nuts!!!
 
 _______
-![My Image](res.png)
+![My Image 01](input.png)
+![My Image 02](output.png)
